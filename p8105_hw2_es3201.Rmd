@@ -1,7 +1,7 @@
 ---
 title: "Homework 2"
 author: Eric Sun
-output: html_document
+output: github_document
 ---
 
 ```{r}
@@ -19,12 +19,11 @@ trashwheel_df=
             sheet="Mr. Trash Wheel",
             range= cell_cols("A:N")) %>%
   janitor::clean_names() %>%
-  drop_na(dumpster)
+  drop_na(dumpster) %>%
 mutate(
   sports_balls = round(sports_balls),
   sports_balls = as.integer(sports_balls)
 )  %>% view
-)
 ```
 
 Read precipitation data
@@ -57,7 +56,7 @@ Now combine annual precipitation
 ```{r}
 month_df=
   tibble(
-    month_num = 1:12,
+    month = 1:12,
     month_name = month.name
   )
 
