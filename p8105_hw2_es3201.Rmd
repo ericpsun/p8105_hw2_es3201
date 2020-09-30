@@ -71,9 +71,13 @@ This dataset contains information from the Mr. Trashwheel trash collector in Bal
 
 # Problem 2
 
-Read and clean the data; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. Convert the entry variable from character (YES vs NO) to a logical variable.
+Read and clean the NYC Transit dataset; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. Convert the entry variable from character (YES vs NO) to a logical variable.
 
 ```{r}
-
+transit_df= read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
+  clean_names() %>%
+  select(-division, -exit_only, -staffing, -staff_hours, -ada_notes, -free_crossover, -north_south_street, -east_west_street, -corner, -entrance_latitude, -entrance_longitude, -station_location, -entrance_location) %>%
+  mutate(entry=recode(entry, "YES" = "TRUE", "NO" = "FALSE")) %>%
+  mutate(entry=as.logical(entry))
 ```
 
