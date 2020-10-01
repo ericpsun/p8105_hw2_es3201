@@ -67,7 +67,7 @@ precip_df=
 left_join(precip_df, month_df, by="month")
 ```
 
-This dataset contains information from the Mr. Trashwheel trash collector in Baltimore, MD. As trash enters the inner harbor, the trashwheel collects that trash, and stores it in a dumpster. The dataset contains information on year, month, and trash collected, include some specific kinds of trash. There are a total of `r nrows(trashweel_df)` rows in our final dataset. Additional data sheets include month precipitation data.
+This dataset contains information from the Mr. Trashwheel trash collector in Baltimore, MD. As trash enters the inner harbor, the trashwheel collects that trash, and stores it in a dumpster. The dataset contains information on year, month, and trash collected, include some specific kinds of trash. There are a total of `r nrow(trashwheel_df)` rows in our final dataset. Additional data sheets include month precipitation data.
 
 # Problem 2
 
@@ -131,10 +131,10 @@ pols_df= read_csv("./data/pols-month.csv") %>%
 
 snp_df= read_csv("./data/snp.csv") %>%
   clean_names() %>%
-  separate(date, c("year","month","day"), sep="/", remove=TRUE, convert=TRUE, extra="warn", fill="warn") %>%
+  separate(date, c("month","day","year"), sep="/", remove=TRUE, convert=TRUE, extra="warn", fill="warn") %>%
   mutate(month=month.name[month]) %>% 
-  arrange(year, month) %>% 
-  select(-day)
+  relocate(year) %>% 
+  select(-day) %>% view()
 
 unemployment_df= read_csv("./data/unemployment.csv") %>%
   rename(January=Jan) %>%
@@ -150,12 +150,19 @@ unemployment_df= read_csv("./data/unemployment.csv") %>%
   rename(November=Nov) %>%
   rename(December=Dec) %>%
   pivot_longer(January:December, names_to="month", values_to="rate") %>%
-  view()
+  clean_names()
 
 ```
 
 Merge snp into pols
-```{r snp_to_pols}
+```{r merge_data}
+combined_df=
+  left_join(pols_df,snp_df,by=c("year","month"))
+
+combined_df=left_join(
+  combined_df,unemployment_df,by=c("year","month")
+) 
 
 ```
 
+The pols dataset contained information about number of politicians who are democratic or republican at a given point in time. The snp dataset contained information about the closing value of the S&P stock market at a given point in time. The unemployment dataset contained information about the unemployment rate at a given point in time. The combined dataset has dimentions 822x11 with information about the month and year, number of republican or democratic politicians, including whether the president is democrat or republican (prez), and the S&P value (close) and unemployment rate (rate) at the time. The dataset covers years 1947-2015.
