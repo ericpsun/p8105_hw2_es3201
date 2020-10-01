@@ -73,7 +73,7 @@ This dataset contains information from the Mr. Trashwheel trash collector in Bal
 
 Read and clean the NYC Transit dataset; retain line, station, name, station latitude / longitude, routes served, entry, vending, entrance type, and ADA compliance. Convert the entry variable from character (YES vs NO) to a logical variable.
 
-```{r import_data}
+```{r import_p2data}
 transit_df= read_csv("./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
   clean_names() %>%
   select(-division, -exit_only, -staffing, -staff_hours, -ada_notes, -free_crossover, -north_south_street, -east_west_street, -corner, -entrance_latitude, -entrance_longitude, -station_location, -entrance_location) %>%
@@ -86,7 +86,7 @@ str(transit_df)
 This dataset is 1868x19 and contains 19 variables describing subway lines, station names and locations, routes, entrance types, and ADA-compliance. The data cleaning steps so far have cleaned the column names, removed extraneous columns, and converted a character to a logical variable. These data are mostly tidy, as evidenced by the line and station_name variables which have collapsed multiple possible names into single columns. However, the route1:route11 columns are not tidy.
 
 Find number of distinct stations, number of ADA-compliant stations, and proportion of station entrance/exit without vending allow entrance
-```{r}
+```{r unique_stations}
 transit_unique_df= transit_df %>% 
   unite(line_station_name, line, station_name, sep=" ", remove=FALSE) %>%
   relocate(line_station_name) %>%
@@ -102,7 +102,7 @@ There are 465 unique stations. There are 84 ADA-compliant stations. There are 5/
 
 Reformat data so that route number and route name are distinct variables. Find number of unique stations served by A train and of those, which are ADA compliant.
 
-```{r}
+```{r tidy_transit}
 transit_tidy_df = transit_unique_df %>%
   mutate(route8=as.character(route8)) %>%
   mutate(route9=as.character(route9)) %>%
@@ -117,3 +117,45 @@ transit_tidy_df %>% count(train=="A" & ada==TRUE) %>% view()
 ```
 
 There are 60 distinct stations that serve the A train. Of those stations, 17 are also ADA compliant.
+
+#Problem 3
+
+Import and clean data
+```{r import_p3data}
+pols_df= read_csv("./data/pols-month.csv") %>%
+  clean_names() %>%
+  separate(mon, c("year","month","day"), sep="-", remove=TRUE, convert=TRUE, extra="warn", fill="warn") %>%
+  mutate(month=month.name[month]) %>%
+  mutate(prez=ifelse(prez_gop==1,"gop","dem")) %>%
+  select(-prez_gop, -prez_dem, -day) 
+
+snp_df= read_csv("./data/snp.csv") %>%
+  clean_names() %>%
+  separate(date, c("year","month","day"), sep="/", remove=TRUE, convert=TRUE, extra="warn", fill="warn") %>%
+  mutate(month=month.name[month]) %>% 
+  arrange(year, month) %>% 
+  select(-day)
+
+unemployment_df= read_csv("./data/unemployment.csv") %>%
+  rename(January=Jan) %>%
+  rename(February=Feb) %>%
+  rename(March=Mar) %>%
+  rename(April=Apr) %>%
+  rename(May=May) %>%
+  rename(June=Jun) %>%
+  rename(July=Jul) %>%
+  rename(August=Aug) %>%
+  rename(September=Sep) %>%
+  rename(October=Oct) %>%
+  rename(November=Nov) %>%
+  rename(December=Dec) %>%
+  pivot_longer(January:December, names_to="month", values_to="rate") %>%
+  view()
+
+```
+
+Merge snp into pols
+```{r snp_to_pols}
+
+```
+
